@@ -1,0 +1,12 @@
+<div class="search-wrap">
+  <input
+    type="text"
+    class="search-input"
+    [ngModel]="query()"
+    (ngModelChange)="onModelChange($event)"
+    [placeholder]="placeholder()" />
+
+  @if (query()) {
+    <button class="clear-btn" type="button" (click)="clear()">×</button>
+  }
+</div>

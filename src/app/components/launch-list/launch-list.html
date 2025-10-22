@@ -1,0 +1,32 @@
+<section class="wrap">
+  <h2>Latest Launches</h2>
+
+  <app-search-bar
+    (queryChange)="onQuery($event)"
+    [placeholder]="'Search by launch name...'">
+  </app-search-bar>
+
+  @if (loading) { <div>Loading...</div> }
+  @if (error)   { <div class="error">{{ error }}</div> }
+
+  @if (launches$ | async; as launches) {
+    <p class="meta">Total: {{ launches.length }}</p>
+
+    <ul class="list">
+      @for (l of launches; track l.id) {
+        <li class="row">
+          <div class="title">{{ l.name }}</div>
+          <div class="date">{{ l.date_utc | date:'medium' }}</div>
+          <div class="launch-status"
+               [class.is-ok]="l.success === true"
+               [class.is-fail]="l.success === false">
+            {{ l.success === true ? 'Success'
+            : (l.success === false ? 'Not Success' : 'TBD') }}
+          </div>
+        </li>
+      } @empty {
+        <li class="row">No launches found.</li>
+      }
+    </ul>
+  }
+</section>
