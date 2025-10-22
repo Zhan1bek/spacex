@@ -10,7 +10,7 @@
           <span class="chip"
                 [class.ok]="vm.success === true"
                 [class.fail]="vm.success === false">
-            {{ vm.success === true ? 'Success' : (vm.success === false ? 'Failure' : 'TBD') }}
+            {{ vm.success === true ? 'Success' : (vm.success === false ? 'Failure' : 'Unsuccess') }}
           </span>
         </h2>
         <div class="meta">{{ vm.date | date:'full' }}</div>

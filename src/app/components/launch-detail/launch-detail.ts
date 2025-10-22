@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { SpacexService } from '../../services/spacex';
 import { switchMap, of, forkJoin, catchError } from 'rxjs';
 
