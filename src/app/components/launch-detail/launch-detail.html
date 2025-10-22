@@ -1,1 +1,27 @@
-<p>launch-detail works!</p>
+<section class="wrap">
+  @if (loading) { <div>Loading...</div> }
+  @if (error)   { <div class="error">{{ error }}</div> }
+
+  @if (vm) {
+    <header class="hdr">
+      <div>
+        <h2 class="title">{{ vm.name }}</h2>
+        <div class="date">{{ vm.date_utc | date:'full' }}</div>
+      </div>
+      @if (vm.links?.patch?.small) {
+        <img class="patch" [src]="vm.links.patch.small" alt="mission patch" />
+      }
+    </header>
+
+    @if (vm.details) { <p class="details">{{ vm.details }}</p> }
+
+    <ul class="links">
+      @if (vm.links?.article) {
+        <li><a [href]="vm.links.article" target="_blank" rel="noopener">Article</a></li>
+      }
+      @if (vm.links?.webcast) {
+        <li><a [href]="vm.links.webcast" target="_blank" rel="noopener">Webcast</a></li>
+      }
+    </ul>
+  }
+</section>

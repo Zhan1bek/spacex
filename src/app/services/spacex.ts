@@ -18,5 +18,9 @@ export class SpacexService {
     );
 
   }
+  getLaunch(id: string): Observable<Launch> {
+    return this.http.get<Launch>(`${this.base}/launches/${id}`);
+  }
+
 
 }
