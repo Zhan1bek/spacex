@@ -22,5 +22,13 @@ export class SpacexService {
     return this.http.get<Launch>(`${this.base}/launches/${id}`);
   }
 
+  getRocket(id: string) {
+    return this.http.get<{ id: string; name: string }>(`${this.base}/rockets/${id}`);
+  }
+
+  getLaunchpad(id: string) {
+    return this.http.get<{ id: string; name: string; locality: string }>(`${this.base}/launchpads/${id}`);
+  }
+
 
 }

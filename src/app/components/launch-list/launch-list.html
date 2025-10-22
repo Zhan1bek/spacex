@@ -15,18 +15,21 @@
     <ul class="list">
       @for (l of launches; track l.id) {
         <li class="row">
-          <div class="title">{{ l.name }}</div>
-          <div class="date">{{ l.date_utc | date:'medium' }}</div>
-          <div class="launch-status"
-               [class.is-ok]="l.success === true"
-               [class.is-fail]="l.success === false">
-            {{ l.success === true ? 'Success'
-            : (l.success === false ? 'Not Success' : 'TBD') }}
-          </div>
+          <a class="row-link" [routerLink]="['/launch', l.id]">
+            <div class="title">{{ l.name }}</div>
+            <div class="date">{{ l.date_utc | date:'medium' }}</div>
+            <div class="launch-status"
+                 [class.is-ok]="l.success === true"
+                 [class.is-fail]="l.success === false">
+              {{ l.success === true ? 'Success'
+              : (l.success === false ? 'Not Success' : 'TBD') }}
+            </div>
+          </a>
         </li>
       } @empty {
         <li class="row">No launches found.</li>
       }
+
     </ul>
   }
 </section>

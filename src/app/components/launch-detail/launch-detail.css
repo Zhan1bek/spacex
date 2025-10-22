@@ -2,12 +2,25 @@
 .error { color: #e74c3c; }
 
 .hdr { display: flex; gap: 16px; align-items: center; justify-content: space-between; }
-.title { margin: 0; }
-.date { color: #555; }
+.left { display: flex; flex-direction: column; gap: 6px; }
+.title { margin: 0; display: flex; gap: 10px; align-items: center; }
+.meta { color: #555; }
 
-.patch { width: 80px; height: 80px; object-fit: contain; }
+.patch { width: 84px; height: 84px; object-fit: contain; }
 
-.details { margin: 16px 0; line-height: 1.5; }
+.chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .85rem;
+  border: 1px solid #d0d7de;
+}
+.chip.ok   { color: #2ecc71; border-color: #2ecc71; }
+.chip.fail { color: #e74c3c; border-color: #e74c3c; }
 
-.links { display: flex; gap: 16px; list-style: none; padding: 0; }
+.details { margin: 14px 0; line-height: 1.6; }
+
+.links { display: flex; gap: 16px; list-style: none; padding: 0; margin: 8px 0 16px; }
 .links a { text-decoration: none; }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; }
+.gallery img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }

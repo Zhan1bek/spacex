@@ -5,15 +5,16 @@ import {SpacexService} from '../../services/spacex';
 import {
   Observable, Subject, combineLatest, of,
   debounceTime, distinctUntilChanged, startWith,
-  map, catchError, shareReplay
+  map, catchError, shareReplay, BehaviorSubject
 } from 'rxjs';
 import {SearchBar} from '../search-bar/search-bar';
+import {RouterLink} from '@angular/router';
 
 
 @Component({
   selector: 'app-launch-list',
   standalone: true,
-  imports: [CommonModule, SearchBar],
+  imports: [CommonModule, SearchBar, RouterLink],
   templateUrl: './launch-list.html',
   styleUrl: './launch-list.css'
 })
@@ -23,6 +24,8 @@ export class LaunchList implements OnDestroy {
   launches$!: Observable<Launch[]>;
   loading = true;
   error = '';
+
+  private successOnly$ = new BehaviorSubject<boolean>(false);
 
 
   constructor(private api: SpacexService) {

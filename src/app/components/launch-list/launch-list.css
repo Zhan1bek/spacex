@@ -32,3 +32,16 @@
 .launch-status.is-ok { color: #2ecc71 !important; }
 
 .error { color: #e74c3c; }
+
+
+.row { position: relative; padding: 0; }
+.row-link {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.row-link:hover { background: #f7f7f7; }
