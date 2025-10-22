@@ -18,17 +18,14 @@ export class LaunchDetail {
 
   constructor(route: ActivatedRoute, api: SpacexService) {
     route.paramMap.pipe(
-      // 1) тянем сам launch; если упало — возвращаем null и не валимся
       switchMap(params => {
         const id = params.get('id')!;
         return api.getLaunch(id).pipe(
           catchError(() => of(null))
         );
       }),
-      // 2) параллельно (и безопасно) тянем rocket/launchpad
       switchMap(launch => {
         if (!launch) {
-          // не нашли сам запуск — покажем ошибку в subscribe
           return of({ launch: null, rocket: null, launchpad: null });
         }
 
@@ -67,7 +64,6 @@ export class LaunchDetail {
         this.error = '';
       },
       error: () => {
-        // сюда мы уже почти не попадём, но оставим на всякий случай
         this.error = 'Failed to load launch';
         this.loading = false;
       }

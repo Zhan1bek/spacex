@@ -6,6 +6,13 @@
     [placeholder]="'Search by launch name...'">
   </app-search-bar>
 
+  <div class="filters">
+    <label>
+      <input type="checkbox" (change)="toggleSuccessOnly($event)" />
+      Show success only
+    </label>
+  </div>
+
   @if (loading) { <div>Loading...</div> }
   @if (error)   { <div class="error">{{ error }}</div> }
 
@@ -29,7 +36,6 @@
       } @empty {
         <li class="row">No launches found.</li>
       }
-
     </ul>
   }
 </section>

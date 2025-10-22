@@ -1,15 +1,16 @@
-import {Component, OnDestroy} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Launch} from '../../models/launch';
-import {SpacexService} from '../../services/spacex';
+import { Component, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { Launch } from '../../models/launch';
+import { SpacexService } from '../../services/spacex';
 import {
-  Observable, Subject, combineLatest, of,
-  debounceTime, distinctUntilChanged, startWith,
-  map, catchError, shareReplay, BehaviorSubject
+  Observable, Subject, BehaviorSubject, combineLatest, of,
 } from 'rxjs';
-import {SearchBar} from '../search-bar/search-bar';
-import {RouterLink} from '@angular/router';
-
+import {
+  debounceTime, distinctUntilChanged, startWith,
+  map, catchError, shareReplay
+} from 'rxjs/operators';
+import { SearchBar } from '../search-bar/search-bar';
 
 @Component({
   selector: 'app-launch-list',
@@ -20,13 +21,13 @@ import {RouterLink} from '@angular/router';
 })
 export class LaunchList implements OnDestroy {
   private query$ = new Subject<string>();
-  private allLaunches$: Observable<Launch[]>;
-  launches$!: Observable<Launch[]>;
-  loading = true;
-  error = '';
-
   private successOnly$ = new BehaviorSubject<boolean>(false);
 
+  private allLaunches$: Observable<Launch[]>;
+  launches$!: Observable<Launch[]>;
+
+  loading = true;
+  error = '';
 
   constructor(private api: SpacexService) {
     this.allLaunches$ = this.api.getLaunches(120).pipe(
@@ -36,32 +37,43 @@ export class LaunchList implements OnDestroy {
         this.loading = false;
         return of([]);
       })
-    )
+    );
 
-    this.launches$ = combineLatest([
-      this.allLaunches$,
-      this.query$.pipe(
-        startWith(''),
-        debounceTime(700),
-        distinctUntilChanged()
-      )
-    ]).pipe(
-      map(([list, q]) => {
+    const search$ = this.query$.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged()
+    );
+
+    this.launches$ = combineLatest([this.allLaunches$, search$, this.successOnly$]).pipe(
+      map(([list, q, successOnly]) => {
         const s = q.trim().toLowerCase();
-        if (!s) return list;
-        return list.filter(l => l.name?.toLowerCase().includes(s));
+
+        let out = s
+          ? list.filter(l => l.name?.toLowerCase().includes(s))
+          : list;
+
+        if (successOnly) {
+          out = out.filter(l => l.success === true);
+        }
+        return out;
       })
     );
 
-    this.launches$.subscribe({ next: () => (this.loading = false) })
+    this.launches$.subscribe({ next: () => (this.loading = false) });
   }
 
   onQuery(value: string) {
     this.query$.next(value);
   }
 
-  ngOnDestroy() {
-    this.query$.complete();
+  toggleSuccessOnly(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.successOnly$.next(checked);
   }
 
+  ngOnDestroy() {
+    this.query$.complete();
+    this.successOnly$.complete();
+  }
 }

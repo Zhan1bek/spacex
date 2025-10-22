@@ -45,3 +45,6 @@
   color: inherit;
 }
 .row-link:hover { background: #f7f7f7; }
+
+.filters { margin-bottom: 12px; font-size: .95rem; color: #444; }
+.filters input { margin-right: 6px; }
