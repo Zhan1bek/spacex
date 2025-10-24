@@ -12,12 +12,39 @@ export class SpacexService {
   constructor(private http: HttpClient) {}
 
   getLaunches(limit = 30) : Observable<Launch[]> {
-    return this.http.get<Launch[]>(`${this.base}/launches`)
-    .pipe(
-      map(launches => launches.slice(-limit).reverse())
-    );
+    const body = {
+      query: {},
+      options:{
+        sort: { date_utc: 'desc' },
+        limit
+      }
+    };
 
+    return this.http.post<{docs: Launch[]}>(`${this.base}/launches/query`, body)
+      .pipe(map(res => res.docs))
   }
+
+  searchLaunches(term: string, successOnly = false, limit = 30) : Observable<Launch[]> {
+    const query:any = {};
+    if (term && term.trim().length > 0) {
+      query.name = {$regex: term.trim(), $options: 'i'}
+    }
+    if (successOnly) {
+      query.success = true
+    }
+
+    const body = {
+      query,
+      options:{
+        sort: { date_utc: 'desc' },
+        limit
+      }
+    }
+
+    return this.http.post<{docs: Launch[]}>(`${this.base}/launches/query`, body)
+      .pipe(map(res => res.docs))
+  }
+
   getLaunch(id: string): Observable<Launch> {
     return this.http.get<Launch>(`${this.base}/launches/${id}`);
   }

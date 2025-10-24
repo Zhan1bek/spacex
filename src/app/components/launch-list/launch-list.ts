@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Launch } from '../../models/launch';
 import { SpacexService } from '../../services/spacex';
 import {
-  Observable, Subject, BehaviorSubject, combineLatest, of,
+  Observable, Subject, BehaviorSubject, combineLatest, of, switchMap, tap,
 } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, startWith,
@@ -23,41 +23,39 @@ export class LaunchList implements OnDestroy {
   private query$ = new Subject<string>();
   private successOnly$ = new BehaviorSubject<boolean>(false);
 
-  private allLaunches$: Observable<Launch[]>;
+  // private allLaunches$: Observable<Launch[]>;
   launches$!: Observable<Launch[]>;
 
   loading = true;
   error = '';
 
   constructor(private api: SpacexService) {
-    this.allLaunches$ = this.api.getLaunches(120).pipe(
-      shareReplay(1),
-      catchError(() => {
-        this.error = 'Failed to load launch';
-        this.loading = false;
-        return of([]);
-      })
-    );
-
     const search$ = this.query$.pipe(
       startWith(''),
+      map(s => s.trim()),
       debounceTime(300),
       distinctUntilChanged()
     );
 
-    this.launches$ = combineLatest([this.allLaunches$, search$, this.successOnly$]).pipe(
-      map(([list, q, successOnly]) => {
-        const s = q.trim().toLowerCase();
+    const success$ = this.successOnly$.pipe(
+      startWith(false),
+      distinctUntilChanged()
+    )
 
-        let out = s
-          ? list.filter(l => l.name?.toLowerCase().includes(s))
-          : list;
-
-        if (successOnly) {
-          out = out.filter(l => l.success === true);
-        }
-        return out;
-      })
+    this.launches$ = combineLatest([search$, success$]).pipe(
+      tap(() => { this.loading = true; this.error = ''; }),
+      switchMap(([term, successOnly]) =>
+        (term || successOnly
+            ? this.api.searchLaunches(term, successOnly, 120)
+            : this.api.getLaunches(120)
+        ).pipe(
+          catchError(() => {
+            this.error = 'Failed to load launch';
+            return of<Launch[]>([]);
+          })
+        )
+      ),
+      tap(() => { this.loading = false; })
     );
 
     this.launches$.subscribe({ next: () => (this.loading = false) });
